@@ -18,6 +18,10 @@ jobs:
         - name: 🧪 Test
           run: npm run test:local
 
+        - name: 🧪 TestRun
+          run: npx wdio run wdio.conf.js
+
+
         - name: 📦 Upload Logs
           uses: actions/upload-artifact@v4
           if: failure()

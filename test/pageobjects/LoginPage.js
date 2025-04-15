@@ -13,7 +13,7 @@ class LoginPage {
 
     async login(email, password) {
         await this.inputEmail.setValue(email);
-        await browser.pause(3000);
+        await browser.pause(2000);
         await this.inputPassword.setValue(password);
         await browser.pause(3000);
         await this.btnSignIn.click();
