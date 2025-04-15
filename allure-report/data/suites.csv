@@ -1,0 +1,5 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","14555","should login and verify dashboard elements","","Thu Apr 10 08:35:44 IST 2025","passed","Thu Apr 10 08:35:59 IST 2025","","Dashboard Verification After Login","",""
+"","11525","should login with valid credentials","","Thu Apr 10 08:35:44 IST 2025","passed","Thu Apr 10 08:35:55 IST 2025","","Pengate Login Test","",""
+"","51136","should fill form details, click reset and back","","Thu Apr 10 08:35:44 IST 2025","broken","Thu Apr 10 08:36:35 IST 2025","","Provide Details Feature - Fill Form and Reset/Back","",""
+"","22072","should login, go to New Request and choose a plan","","Thu Apr 10 08:35:44 IST 2025","passed","Thu Apr 10 08:36:06 IST 2025","","New Request Feature - Plan Selection","",""
