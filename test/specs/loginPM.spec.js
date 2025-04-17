@@ -1,13 +1,15 @@
 
 
-const loginPagePM = require('../pageobjects/LoginPagePM');
+//import LoginPage from '../../src/pageobjects/LoginPagePM';
+import LoginPage from '../../src/pageobjects/LoginPage';
+
 
 describe('Login Feature for PM', () => {
-    it('should login with valid credentials', async () => {
-        await loginPagePM.open();
+    it('should login with valid credentials @smoke', async () => {
+        await LoginPage.open();
 
         // Login action
-        await loginPagePM.login(
+        await LoginPage.login(
             'pm.s.c1gosipxm2@quarksek.com',
             'ProjectM@New!23'
         );

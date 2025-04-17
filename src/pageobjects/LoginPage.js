@@ -1,8 +1,7 @@
+class LoginPage {
 
-class LoginPagePM {
-    // Locators
     get inputEmail() {
-        return $("//input[@id=':r0:-form-item']"); 
+        return $("//input[@id=':r0:-form-item']");
     }
 
     get inputPassword() {
@@ -10,24 +9,21 @@ class LoginPagePM {
     }
 
     get btnSignIn() {
-        return $("//button[@type='submit']"); // Text-based locator
+        return $("//button[@type='submit']");
     }
 
-    // Actions
+
     async open() {
         await browser.maximizeWindow();
-
         await browser.url('https://pengate-staging.quarksek.com/login');
     }
 
     async login(email, password) {
-        await browser.pause(3000);
         await this.inputEmail.setValue(email);
-        await browser.pause(3000);
         await this.inputPassword.setValue(password);
-        await browser.pause(3000);
         await this.btnSignIn.click();
     }
 }
 
-module.exports = new LoginPagePM();
+
+export default new LoginPage();
