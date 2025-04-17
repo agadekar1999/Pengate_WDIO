@@ -1,75 +1,101 @@
+# .github/workflows/your-workflow-name.yml
 name: WebdriverIO Tests
+
+# Controls when the workflow will run
 on:
   push:
     branches:
       - main
-      - feature-pranav
-jobs:
-  test:
-    timeout-minutes: 60
-    runs-on: windows-latest
+      - feature-pranav # Trigger on pushes to main or feature-pranav
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "test"
+  test:
+    # The type of runner that the job will run on
+    runs-on: windows-latest # Use a Windows runner
+    # Set a timeout for the job
+    timeout-minutes: 60
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      # Step 1: Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: ⬇️ Checkout Code
         uses: actions/checkout@v4
 
+      # Step 2: Sets up Node.js using the latest Long Term Support (LTS) version
       - name: 🐢 Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: lts/*
+          node-version: lts/* # Use the latest LTS Node.js version
 
+      # Step 3: Install project dependencies using npm ci (clean install)
       - name: 🏗️ Install Dependencies
-        run: npm ci
+        run: npm ci # Use 'ci' for faster, reliable installs in CI environments
 
+      # Step 4: Run WebdriverIO tests using the configuration file
       - name: 🧪 TestRun
         run: npx wdio run wdio.conf.js
 
+      # Step 5: Generate the Allure report from the results
+      # This step runs even if the TestRun step fails, to generate a report of the failure
       - name: 🛠️ Generate Allure-report
-        run:
-      - name: 📦 Upload Allure-report
-        uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: monocart-report
-          path: monocart-report/
-          retention-days: 30
+        if: always() # Ensure Allure report is generated even if tests fail
+        run: npx allure generate allure-results --clean # Generate report into ./allure-report, clean previous results
 
-      - name: Zip report directories
+      # Step 6: Upload the generated Allure report as a build artifact
+      - name: 📦 Upload Allure-report Artifact
+        # Run this step even if tests fail, but not if the job was cancelled
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report # Name of the artifact
+          path: allure-report/ # Path to the directory to upload
+          retention-days: 30 # How long to keep the artifact
+
+      # Step 7: Zip the Allure report directory for email attachment
+      - name: 📦 Zip Allure Report
         # Run this step even if tests fail, but not if cancelled, to attach failure reports
         if: ${{ !cancelled() }}
         run: |
-          Compress-Archive -Path monocart-report -DestinationPath monocart-report.zip
-        shell: pwsh # Specify PowerShell
+          Compress-Archive -Path allure-report -DestinationPath allure-report.zip -Force # Use -Force to overwrite if zip exists
+        shell: pwsh # Specify PowerShell for Compress-Archive
 
-      - name: Send email report
-        uses: dawidd6/action-send-mail@v4
+      # Step 8: Send the email report with the zipped Allure report attached
+      - name: 📧 Send email report
         # Ensure this step runs even if previous steps fail (e.g., tests fail)
         # but only if the job wasn't cancelled
         if: ${{ !cancelled() }}
+        uses: dawidd6/action-send-mail@v4
         with:
-          # Use separate parameters for SMTPS on port 465
+          # SMTP server configuration (using SMTPS on port 465)
           server_address: smtpout.secureserver.net
           server_port: 465
-          # Ensure these secrets contain the correct GoDaddy email username (full address) and password
-          username: ${{ secrets.USER_EMAIL }} # Replace with your secret name if different
-          password: ${{ secrets.USER_EMAIL_PWD }} # Replace with your secret name if different
-          secure: true # Explicitly use SMTPS/SSL for port 465
+          secure: true # Use SSL/SMTPS
+
+          # Credentials (use GitHub secrets)
+          username: ${{ secrets.USER_EMAIL }} # Your GoDaddy email address
+          password: ${{ secrets.USER_EMAIL_PWD }} # Your GoDaddy email password or app password
 
           # Email details
           subject: WebdriverIO UI test run report (${{ github.repository }} - ${{ github.run_id }})
           to: pranav.sp@quarksek.com,amogsiddha@quarksek.com
-          from: ${{secrets.USER_EMAIL}}
+          from: ${{ secrets.USER_EMAIL }} # Sender email address
           # Optional: cc: cc@example.com
           # Optional: bcc: bcc@example.com
-          # Body of the email
+
+          # Body of the email (using YAML literal block scalar)
           body: |
             WebdriverIO UI test run completed for repository ${{ github.repository }}.
-              Branch: ${{ github.ref_name }}
-              Commit: ${{ github.sha }}
-              Workflow Run ID: ${{ github.run_id }}
 
-              Reports are attached.
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Workflow Run ID: ${{ github.run_id }}
+            Link to Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-          # Note: This action supports attaching files directly.
+            Allure report is attached (allure-report.zip).
+
+          # Attach the zipped report file
+          # Ensure the filename matches the DestinationPath from the Zip step
           attachments: |
-            monocart-report.zip
+            allure-report.zip
