@@ -40,13 +40,6 @@ exports.config = {
         disableWebdriverScreenshotsReporting: false,
       },
     ],
-    [
-      "monocart-reporter",
-      {
-        name: "Pengate WebdriverIO UI Test Report",
-        outputFile: "./monocart-report/index.html",
-      },
-    ],
   ],
   mochaOpts: {
     ui: "bdd",

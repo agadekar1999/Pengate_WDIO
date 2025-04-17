@@ -24,14 +24,9 @@ jobs:
       - name: 🧪 TestRun
         run: npx wdio run wdio.conf.js
 
-      - name: 📦 Upload Logs
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: logs
-          path: logs
-
-      - name: 📦 Upload monocart-report
+      - name: 🛠️ Generate Allure-report
+        run:
+      - name: 📦 Upload Allure-report
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
