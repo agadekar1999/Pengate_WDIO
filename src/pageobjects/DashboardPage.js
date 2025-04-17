@@ -6,6 +6,7 @@ class DashboardPage {
 
     async isPengateVisible() {
         return await this.pengateTitle.isDisplayed();
+        await browser.pause(2000);
 
     }
 
