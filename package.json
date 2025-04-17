@@ -19,5 +19,8 @@
     "@wdio/spec-reporter": "^9.12.3",
     "allure-commandline": "^2.33.0",
     "open-cli": "^8.0.0"
+  },
+  "dependencies": {
+    "monocart-reporter": "^2.9.17"
   }
 }

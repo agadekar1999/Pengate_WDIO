@@ -1,30 +1,80 @@
-name: CI
-on: [push, pull_request]
+name: WebdriverIO Tests
+on:
+  push:
+    branches:
+      - main
+      - feature-pranav
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    timeout-minutes: 60
+    runs-on: windows-latest
+
     steps:
-        - name: ⬇️ Checkout Code
-          uses: actions/checkout@v4
+      - name: ⬇️ Checkout Code
+        uses: actions/checkout@v4
 
-        - name: 🐢 Setup Node
-          uses: actions/setup-node@v4
-          with:
-            node-version-file: '.nvmrc'
+      - name: 🐢 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
 
-        - name: 🏗️ Install Dependencies
-          run: npm install
+      - name: 🏗️ Install Dependencies
+        run: npm ci
 
-        - name: 🧪 Test
-          run: npm run test:local
+      - name: 🧪 TestRun
+        run: npx wdio run wdio.conf.js
 
-        - name: 🧪 TestRun
-          run: npx wdio run wdio.conf.js
+      - name: 📦 Upload Logs
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: logs
+          path: logs
 
+      - name: 📦 Upload monocart-report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: monocart-report
+          path: monocart-report/
+          retention-days: 30
 
-        - name: 📦 Upload Logs
-          uses: actions/upload-artifact@v4
-          if: failure()
-          with:
-            name: logs
-            path: logs
+      - name: Zip report directories
+        # Run this step even if tests fail, but not if cancelled, to attach failure reports
+        if: ${{ !cancelled() }}
+        run: |
+          Compress-Archive -Path monocart-report -DestinationPath monocart-report.zip
+        shell: pwsh # Specify PowerShell
+
+      - name: Send email report
+        uses: dawidd6/action-send-mail@v4
+        # Ensure this step runs even if previous steps fail (e.g., tests fail)
+        # but only if the job wasn't cancelled
+        if: ${{ !cancelled() }}
+        with:
+          # Use separate parameters for SMTPS on port 465
+          server_address: smtpout.secureserver.net
+          server_port: 465
+          # Ensure these secrets contain the correct GoDaddy email username (full address) and password
+          username: ${{ secrets.USER_EMAIL }} # Replace with your secret name if different
+          password: ${{ secrets.USER_EMAIL_PWD }} # Replace with your secret name if different
+          secure: true # Explicitly use SMTPS/SSL for port 465
+
+          # Email details
+          subject: WebdriverIO UI test run report (${{ github.repository }} - ${{ github.run_id }})
+          to: pranav.sp@quarksek.com,amogsiddha@quarksek.com
+          from: ${{secrets.USER_EMAIL}}
+          # Optional: cc: cc@example.com
+          # Optional: bcc: bcc@example.com
+          # Body of the email
+          body: |
+            WebdriverIO UI test run completed for repository ${{ github.repository }}.
+              Branch: ${{ github.ref_name }}
+              Commit: ${{ github.sha }}
+              Workflow Run ID: ${{ github.run_id }}
+
+              Reports are attached.
+
+          # Note: This action supports attaching files directly.
+          attachments: |
+            monocart-report.zip
