@@ -47,7 +47,7 @@ exports.config = {
     retries: 0,
     //grep: '@smoke'
   },
-  afterTest: async function (
+  /*afterTest: async function (
     test,
     context,
     { error, result, duration, passed, retries }
@@ -67,5 +67,5 @@ exports.config = {
         "image/png"
       );
     }
-  },
+  },*/
 };

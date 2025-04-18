@@ -41,7 +41,11 @@ jobs:
       # This step runs even if the TestRun step fails, to generate a report of the failure
       - name: 🛠️ Generate Allure-report
         if: always() # Ensure Allure report is generated even if tests fail
-        run: npx allure generate allure-results --clean # Generate report into ./allure-report, clean previous results
+        #run: npx allure generate allure-results --clean
+        run: allure generate allure-results --clean -o allure-report # Generate report into ./allure-report, clean previous results
+      
+
+
 
       # Step 6: Upload the generated Allure report as a build artifact
       - name: 📦 Upload Allure-report Artifact
