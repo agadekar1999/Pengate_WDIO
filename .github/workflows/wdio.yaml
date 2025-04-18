@@ -6,7 +6,7 @@ on:
   push:
     branches:
       - main
-      - feature-pranav # Trigger on pushes to main or feature-pranav
+      - feature-amog # Trigger on pushes to main or feature-pranav
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
