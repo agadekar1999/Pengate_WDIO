@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "run-tests": "npm run clean:report && wdio run wdio.conf.js && npm run report",
-    "clean:report": "rm -rf allure-results allure-report",
-    "report": "npx allure generate allure-results --clean -o allure-report && npx open-cli allure-report/index.html"
+    "test": "wdio run wdio.conf.js"
   },
   "keywords": [],
   "author": "",

@@ -39,11 +39,14 @@ jobs:
 
       # Step 5: Generate the Allure report from the results
       # This step runs even if the TestRun step fails, to generate a report of the failure
-      - name: 🛠️ Generate Allure-report
-        if: always() # Ensure Allure report is generated even if tests fail
+      #- name: 🛠️ Generate Allure-report
+        #if: always() # Ensure Allure report is generated even if tests fail
         #run: npx allure generate allure-results --clean
-        run: allure generate allure-results --clean -o allure-report # Generate report into ./allure-report, clean previous results
-      
+        #run: allure generate allure-results --clean -o allure-report # Generate report into ./allure-report, clean previous results
+      - name: 🛠️ Generate Allure-report
+        if: always()
+        run: npx allure generate allure-results --clean -o allure-report
+
 
 
 
@@ -83,7 +86,7 @@ jobs:
 
           # Email details
           subject: WebdriverIO UI test run report (${{ github.repository }} - ${{ github.run_id }})
-          to: pranav.sp@quarksek.com,amogsiddha@quarksek.com
+          to: amogsiddha@quarksek.com
           from: ${{ secrets.USER_EMAIL }} # Sender email address
           # Optional: cc: cc@example.com
           # Optional: bcc: bcc@example.com
